@@ -33,9 +33,10 @@ def count():
 ######################################################################
 # GET ALL PICTURES
 ######################################################################
+
 @app.route("/picture", methods=["GET"])
 def get_pictures():
-    pass
+    return data, 200
 
 ######################################################################
 # GET A PICTURE
@@ -44,15 +45,28 @@ def get_pictures():
 
 @app.route("/picture/<int:id>", methods=["GET"])
 def get_picture_by_id(id):
-    pass
+    for pic in data:
+        if pic["id"] == int(id):
+            return pic, 200
+    return {"message":"Picture not Found"}, 404
 
 
 ######################################################################
 # CREATE A PICTURE
 ######################################################################
+
+
 @app.route("/picture", methods=["POST"])
 def create_picture():
-    pass
+    new_picture = request.json
+    # Looking for duplicate
+    for pic in data:
+        if new_picture["id"] == pic["id"]:
+            return {"Message":f"picture with id {new_picture['id']} already present"}, 302
+    
+    data.append(new_picture)
+    return new_picture, 201
+
 
 ######################################################################
 # UPDATE A PICTURE
@@ -61,11 +75,23 @@ def create_picture():
 
 @app.route("/picture/<int:id>", methods=["PUT"])
 def update_picture(id):
-    pass
+    new_picture = request.json
+    # Looking for picture in data
+    for picture in data:
+        if picture.get("id") == id:
+            picture.update(new_picture)
+            return picture, 200
+    else:
+        return {"message": "picture not found"}, 404
 
 ######################################################################
 # DELETE A PICTURE
 ######################################################################
+
 @app.route("/picture/<int:id>", methods=["DELETE"])
 def delete_picture(id):
-    pass
+    for picture in data:
+        if picture["id"] == id:
+            data.remove(picture)
+            return {"message": f"Picture of id{picture['id']} deleted"}, 204
+    return {"message":"Picture not Found"}, 404
